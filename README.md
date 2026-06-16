@@ -3,28 +3,29 @@
 **Behavior-first React components.**
 Async state, forms, and data fetching — batteries included.
 
-> "1つの『めんどくさい』を完璧に潰す"
+> "Kill one 'annoying thing' perfectly."
 
 ---
 
-## 目次
+## Table of Contents
 
-- [コンセプト](#コンセプト)
-- [コンポーネント一覧](#コンポーネント一覧)
-- [インストール](#インストール)
-- [使い方](#使い方)
-- [開発者向けセットアップ](#開発者向けセットアップ)
-- [設計原則](#設計原則)
-- [ライセンス](#ライセンス)
+- [Concept](#concept)
+- [Components](#components)
+- [Who is this for?](#who-is-this-for)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Developer Setup](#developer-setup)
+- [Design Principles](#design-principles)
+- [License](#license)
 
 ---
 
-## コンセプト
+## Concept
 
-ほとんどの UI ライブラリは「見た目」で止まっています。あなたはまだこれを毎回書いていませんか？
+Most UI libraries stop at *appearance*. Are you still writing this every time?
 
 ```tsx
-// ❌ 毎回書くボイラープレート
+// ❌ Boilerplate you write over and over
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState<Error | null>(null);
 
@@ -40,107 +41,93 @@ async function handleClick() {
 }
 ```
 
-**behave-ui** はこれを「振る舞い込みコンポーネント」として提供します。
+**behave-ui** ships components that own their *behavior* — not just their look.
 
 ```tsx
 // ✅ behave-ui
-<AsyncButton onClick={() => api.submit(data)} loadingText="送信中...">
-  送信する
+<AsyncButton onClick={() => api.submit(data)} loadingText="Submitting...">
+  Submit
 </AsyncButton>
 ```
 
 ---
 
-## こんな人におすすめ
+## Who is this for?
 
-- **管理画面・社内ツール・ダッシュボードを作っている人**
-  デザインより機能を先に動かしたい場面で特に効果を発揮します
+**Great fit:**
+- **Admin panels, internal tools, dashboards** — ship features before worrying about design
+- **Startups and solo developers** — spend time on business logic, not boilerplate
+- **Projects already using Zod** — turn existing schemas directly into form UIs
+- **Teams that want to move fast** — drop in one component at a time, shadcn/ui style
 
-- **スタートアップ・個人開発者**
-  ボイラープレートを書いている時間を、ビジネスロジックに使いたい人
-
-- **Zodをすでに使っているプロジェクト**
-  既存のスキーマ定義をそのままフォームUIに変換できます
-
-- **「とりあえず動くもの」を速く作りたいチーム**
-  shadcn/ui と同じコピペ方式なので、1コンポーネントから試せます
-
-## こんな人には向いていない
-
-- ピクセルパーフェクトなデザインが必要なプロダクト
-  （スタイルは自分で当てる必要があります）
-
-- TanStack Query をすでに使いこなしているチーム
-  （DataFetch は TanStack Query の代替ではなく、より軽量な選択肢です）
-
-- 複雑なフォームレイアウト（2カラム・フィールドグループなど）が必要な場合
-  （React Hook Form を直接使う方が柔軟です）
+**Not a great fit:**
+- Products that require pixel-perfect design systems (you style everything yourself)
+- Teams already using TanStack Query (DataFetch is a lighter alternative, not a replacement)
+- Complex form layouts like multi-column grids (React Hook Form directly is more flexible)
 
 ---
 
-## コンポーネント一覧
+## Components
 
-| コンポーネント | 解決する問題 |
+| Component | What it solves |
 |---|---|
-| `<AsyncButton />` | pending / success / error 状態を自動管理するボタン |
-| `<AutoForm />` | **Zod v4対応** — スキーマから完全なフォーム UI を自動生成 |
-| `<DataFetch />` | loading / error / empty / data を 1 タグで管理 |
-| `useAsyncState` | 上記のコアとなる非同期状態フック |
+| `<AsyncButton />` | Manages pending / success / error state automatically |
+| `<AutoForm />` | **Zod v4 ready** — generates a full form UI from a schema |
+| `<DataFetch />` | Handles loading / error / empty / data in one tag |
+| `useAsyncState` | The core async state hook powering the above |
 
-### ✨ **Zod v4 完全対応 + Discriminated Union**
-behave-ui は **Zod v4 に完全対応した** 数少ないフォームライブラリです。
+### ✨ Zod v4 + Discriminated Union Support
 
-**v0.4.0 の主な機能:**
-- 🔀 **Discriminated Union**: 条件付きフォームフィールドの自動切り替え（NEW!）
-- 🔢 **数値フィールド**: `z.number()` の値が正しく number 型として扱われる
-- 📋 **プルダウン選択**: `z.enum()` のオプションが正常に表示・選択可能
-- 🧬 **型安全性**: Zod v4 の新しい API 構造に完全対応
-- 🎯 **ゼロブレイク**: v3 からの移行時も既存コードが動作
+behave-ui is one of the few form libraries with **full Zod v4 support**.
+
+**What's in v0.4.0:**
+- 🔀 **Discriminated Union** — conditional fields that switch automatically (NEW!)
+- 🔢 **Number fields** — `z.number()` values are correctly typed as `number`, not `string`
+- 📋 **Enum selects** — `z.enum()` options render correctly
+- 🧬 **Type safety** — fully compatible with Zod v4's new internal API
+- 🎯 **Zero breaking changes** — v3 schemas continue to work
 
 ---
 
-## インストール
+## Installation
 
-### Option A — コピペ方式（推奨）
+### Option A — Copy into your project (recommended)
 
-コードをプロジェクトにコピーします。依存関係ゼロ。コードを完全に制御できます。
+No hidden dependencies. You own the code. Customize freely.
 
 ```bash
-# 最新版 v1.0.0（yarn dlx 対応）
-# npm/pnpm ユーザー
+# npm / pnpm
 npx @behave-ui/cli@latest add async-button
 npx @behave-ui/cli@latest add auto-form
 npx @behave-ui/cli@latest add data-fetch
 
-# yarn ユーザー（v1.0.0 から対応）
+# yarn
 yarn dlx @behave-ui/cli@latest add async-button
 yarn dlx @behave-ui/cli@latest add auto-form
 yarn dlx @behave-ui/cli@latest add data-fetch
 
-# 全部まとめて
+# Add everything at once
 npx @behave-ui/cli@latest add async-button auto-form data-fetch
-yarn dlx @behave-ui/cli@latest add async-button auto-form data-fetch
 
-# 一覧を確認
+# List available components
 npx @behave-ui/cli@latest list
-yarn dlx @behave-ui/cli@latest list
 ```
 
-ファイルは `src/components/ui/<ComponentName>/` に追加されます。
+Files are added to `src/components/ui/<ComponentName>/`.
 
-### Option B — npm パッケージ
+### Option B — npm package
 
 ```bash
-yarn add @behave-ui/react
-# または
 npm install @behave-ui/react
+# or
+yarn add @behave-ui/react
 ```
 
-**現在のバージョン: CLI v1.0.2 / React v0.4.0** (Discriminated Union対応 + Zod v4 完全対応)
+**Current versions: CLI v1.0.2 / React v0.4.0**
 
 ---
 
-## 使い方
+## Usage
 
 ### AsyncButton
 
@@ -149,35 +136,35 @@ import { AsyncButton } from '@behave-ui/react';
 
 <AsyncButton
   onClick={async () => await api.submitForm(data)}
-  loadingText="送信中..."
-  successText="完了！"
-  errorText="失敗しました"
+  loadingText="Submitting..."
+  successText="Done!"
+  errorText="Something went wrong"
   onSuccess={() => router.push('/done')}
   onError={(err) => toast.error(err.message)}
 >
-  送信する
+  Submit
 </AsyncButton>
 ```
 
-**状態機械**
+**State machine**
 
 ```
 idle ──(click)──► pending ──(resolve)──► success ──(resetDelay)──► idle
                       └───(reject)───► error ─────(click)──────► idle
 ```
 
-**主な Props**
+**Props**
 
-| Prop | 型 | デフォルト | 説明 |
+| Prop | Type | Default | Description |
 |------|----|-----------|------|
-| `onClick` | `() => Promise<T>` | **必須** | 実行する非同期関数 |
-| `loadingText` | `string` | — | pending 時のラベル |
-| `successText` | `string` | — | success 時のラベル |
-| `errorText` | `string` | — | error 時のラベル |
-| `onSuccess` | `(data: T) => void` | — | 成功時コールバック |
-| `onError` | `(err: Error) => void` | — | エラー時コールバック |
-| `resetDelay` | `number` | `2000` | success 後 idle に戻るまでの ms。`0` で無効 |
-| `renderContent` | `(status) => ReactNode` | — | 状態に応じた完全カスタムレンダリング |
+| `onClick` | `() => Promise<T>` | **required** | Async function to run on click |
+| `loadingText` | `string` | — | Label while pending |
+| `successText` | `string` | — | Label after success |
+| `errorText` | `string` | — | Label after error |
+| `onSuccess` | `(data: T) => void` | — | Called with the resolved value |
+| `onError` | `(err: Error) => void` | — | Called with the caught error |
+| `resetDelay` | `number` | `2000` | ms before auto-reset to idle. `0` to disable |
+| `renderContent` | `(status) => ReactNode` | — | Full render control based on status |
 
 ---
 
@@ -188,29 +175,29 @@ import { z } from 'zod';
 import { AutoForm } from '@behave-ui/react';
 
 const schema = z.object({
-  name:  z.string().min(1, '必須項目です'),
-  email: z.string().email(),
-  age:   z.number().int().positive().max(120),  // ✅ v4: 数値型で正しく扱われる
-  role:  z.enum(['admin', 'user', 'viewer']),   // ✅ v4: 選択肢が正常に表示
-  isActive: z.boolean().default(true),          // ✅ v4: デフォルト値対応
-  bio:   z.string().optional(),
+  name:     z.string().min(1, 'Required'),
+  email:    z.string().email(),
+  age:      z.number().int().positive().max(120),
+  role:     z.enum(['admin', 'user', 'viewer']),
+  isActive: z.boolean().default(true),
+  bio:      z.string().optional(),
 });
 
 <AutoForm
   schema={schema}
   onSubmit={async (values) => await api.createUser(values)}
   fieldConfig={{
-    age:      { label: '年齢', type: 'number', description: '1-120の数値' },
-    role:     { label: '権限', type: 'select' },
-    isActive: { label: 'アクティブ', type: 'checkbox' },
-    bio:      { label: '自己紹介', type: 'textarea' },
+    age:      { label: 'Age', type: 'number', description: 'Between 1 and 120' },
+    role:     { label: 'Role', type: 'select' },
+    isActive: { label: 'Active', type: 'checkbox' },
+    bio:      { label: 'Bio', type: 'textarea' },
   }}
 />
 ```
 
-**🔀 Discriminated Union（v0.4.0〜）**
+**🔀 Discriminated Union (v0.4.0+)**
 
-条件に応じてフィールドが動的に切り替わります：
+Fields switch dynamically based on the selected value:
 
 ```tsx
 const schema = z.discriminatedUnion('accountType', [
@@ -228,20 +215,20 @@ const schema = z.discriminatedUnion('accountType', [
 ]);
 
 <AutoForm schema={schema} onSubmit={handleSubmit} />
-// accountType で "personal" を選ぶと age フィールドが表示
-// "company" を選ぶと taxId, employees フィールドに切り替わる
+// Selecting "personal" shows age
+// Selecting "company" shows taxId and employees
 ```
 
-**フィールド自動マッピング**
+**Field auto-mapping**
 
-| Zod の型 | デフォルト UI | `type` で変更可能 |
+| Zod type | Default UI | Override with `type` |
 |---------|-------------|-----------------|
 | `z.string()` | `<input type="text">` | `textarea`, `password`, `url`, `email` |
 | `z.number()` | `<input type="number">` | `range` |
 | `z.boolean()` | `<input type="checkbox">` | `toggle` |
 | `z.enum()` | `<select>` | `radio-group` |
 | `z.date()` | `<input type="date">` | `datetime-local` |
-| `z.discriminatedUnion()` | 動的フィールド切り替え | — |
+| `z.discriminatedUnion()` | Dynamic field switching | — |
 
 ---
 
@@ -257,183 +244,162 @@ import { DataFetch } from '@behave-ui/react';
   errorFallback={({ error, retry }) => (
     <div>
       <p>{error.message}</p>
-      <button onClick={retry}>再試行</button>
+      <button onClick={retry}>Retry</button>
     </div>
   )}
-  emptyFallback={<p>ユーザーが見つかりません。</p>}
+  emptyFallback={<p>No user found.</p>}
 >
   {(user) => <UserCard user={user} />}
 </DataFetch>
 ```
 
-**主な Props**
+**Props**
 
-| Prop | 型 | デフォルト | 説明 |
+| Prop | Type | Default | Description |
 |------|----|-----------|------|
-| `queryKey` | `readonly unknown[]` | **必須** | キャッシュキー |
-| `queryFn` | `() => Promise<T>` | **必須** | データ取得関数 |
-| `children` | `(data: NonNullable<T>) => ReactNode` | **必須** | 成功時レンダー関数 |
-| `loadingFallback` | `ReactNode` | 内蔵スケルトン | ローディング中の UI |
-| `errorFallback` | `({ error, retry }) => ReactNode` | 内蔵エラー表示 | エラー時の UI |
-| `emptyFallback` | `ReactNode` | — | データが空の時の UI |
-| `staleTime` | `number` | `60000` | キャッシュ有効期間（ms） |
-| `retry` | `number \| false` | `3` | 自動リトライ回数 |
+| `queryKey` | `readonly unknown[]` | **required** | Cache key (changes trigger re-fetch) |
+| `queryFn` | `() => Promise<T>` | **required** | Data fetching function |
+| `children` | `(data: NonNullable<T>) => ReactNode` | **required** | Render on success |
+| `loadingFallback` | `ReactNode` | built-in skeleton | Shown while loading |
+| `errorFallback` | `({ error, retry }) => ReactNode` | built-in error UI | Shown on error |
+| `emptyFallback` | `ReactNode` | — | Shown when data is null / empty array |
+| `staleTime` | `number` | `60000` | Cache lifetime in ms |
+| `retry` | `number \| false` | `3` | Auto-retry count on error |
 
 ---
 
-### useAsyncState（フック）
+### useAsyncState (hook)
 
-AsyncButton のコア。ボタン UI なしで非同期状態管理だけが欲しい場合に使用。
+The core hook powering AsyncButton. Use it when you need async state management without the button UI.
 
 ```tsx
 import { useAsyncState } from '@behave-ui/react';
 
 const { execute, isPending, isSuccess, isError, error, reset } = useAsyncState({
-  onSuccess: () => toast.success('完了！'),
+  onSuccess: () => toast.success('Done!'),
   onError: (err) => toast.error(err.message),
   resetDelay: 3000,
 });
 
 <button onClick={() => execute(() => uploadFile(file))} disabled={isPending}>
-  {isPending ? 'アップロード中...' : 'アップロード'}
+  {isPending ? 'Uploading...' : 'Upload'}
 </button>
 ```
 
 ---
 
-## 開発者向けセットアップ
+## Developer Setup
 
-### 必要な環境
+### Requirements
 
-| ツール | バージョン |
+| Tool | Version |
 |--------|----------|
-| Node.js | 20 以上（LTS 推奨） |
-| yarn | 4.x（Corepack で自動管理） |
+| Node.js | 20+ (LTS recommended) |
+| yarn | 4.x (managed automatically via Corepack) |
 
-### セットアップ手順
+### Getting Started
 
 ```bash
-# 1. クローン
+# 1. Clone
 git clone https://github.com/HaruyaFujii/behave-ui.git
 cd behave-ui
 
-# 2. Corepack を有効化（初回のみ）
-#    Node.js に標準付属。package.json の "packageManager" を読んで
-#    正しいバージョンの yarn を自動的に使ってくれる。
+# 2. Enable Corepack (first time only)
+#    Reads "packageManager" from package.json and uses the correct yarn version automatically.
 corepack enable
 
-# 3. 依存関係インストール
+# 3. Install dependencies
 yarn install
 
-# 4. ビルド確認
+# 4. Build
 yarn build
 ```
 
----
-
-### テストの実行
+### Running Tests
 
 ```bash
-# ── 全テスト ──────────────────────────────────────
-
-# 全パッケージのテストを一括実行
+# Run all tests across all packages
 yarn test
 
-# react パッケージのみ（開発中はこちらが速い）
+# react package only (faster during development)
 yarn workspace @behave-ui/react test
 
-# ウォッチモード（保存時に自動実行）
+# Watch mode
 yarn workspace @behave-ui/react test:watch
 
-# カバレッジレポート付き
+# With coverage report
 yarn workspace @behave-ui/react test:coverage
 
-
-# ── 絞り込み ──────────────────────────────────────
-
-# コンポーネント単位で実行
+# Filter by component
 yarn workspace @behave-ui/react test src/components/AsyncButton
 yarn workspace @behave-ui/react test src/components/AutoForm
 yarn workspace @behave-ui/react test src/components/DataFetch
 yarn workspace @behave-ui/react test src/hooks
 
-# テスト名でフィルタ
+# Filter by test name
 yarn workspace @behave-ui/react test -t "shows loadingText"
-
-# 特定ファイルのみ
-yarn workspace @behave-ui/react test src/components/AsyncButton/AsyncButton.test.tsx
 ```
 
-**テスト一覧**
+**Test suite**
 
-| ファイル | テスト数 | カバー範囲 |
+| File | Tests | Coverage |
 |---------|---------|-----------|
-| `useAsyncState.test.ts` | 9本 | 状態遷移・リトライ防止・コールバック |
-| `AsyncButton.test.tsx` | 15本 | 4状態・二重送信防止・アクセシビリティ |
-| `AutoForm.test.tsx` | 22本 | フィールド推論・バリデーション・アクセシビリティ |
-| `DataFetch.test.tsx` | 15本 | loading/success/empty/error・キャッシュ・リトライ |
-| **合計** | **61本** | |
+| `useAsyncState.test.ts` | 9 | State transitions, double-submit prevention, callbacks |
+| `AsyncButton.test.tsx` | 15 | All 4 states, accessibility |
+| `AutoForm.test.tsx` | 22 | Field inference, validation, accessibility |
+| `DataFetch.test.tsx` | 15 | loading/success/empty/error, cache, retry |
+| **Total** | **61** | |
 
----
-
-### ビルド
+### Build
 
 ```bash
-# 全パッケージ（ESM + CJS デュアル出力）
+# All packages (ESM + CJS dual output)
 yarn build
 
-# react パッケージのみ
+# react package only
 yarn workspace @behave-ui/react build
 
-# CLI パッケージのみ
+# CLI package only
 yarn workspace @behave-ui/cli build
 
-# 型チェックのみ（ビルドなし）
+# Type check only (no build)
 yarn workspace @behave-ui/react typecheck
 
-# CLI のローカル動作確認
+# Test CLI locally
 yarn workspace @behave-ui/cli build
 node packages/cli/dist/index.js list
 node packages/cli/dist/index.js add async-button --out-dir ./test-output
 ```
 
----
-
-### ディレクトリ構造
+### Directory Structure
 
 ```
 behave-ui/
-├── CLAUDE.md                     # Claude Code 向けプロジェクト設定
-├── README.md                     # このファイル
-├── package.json                  # yarn workspaces ルート
-├── .yarnrc.yml                   # yarn berry 設定
-├── tsconfig.base.json            # 共有 TypeScript 設定
-├── .changeset/                   # バージョン管理（changesets）
-├── .github/workflows/ci.yml      # CI（テスト・型チェック・publish）
+├── CLAUDE.md                     # Claude Code project settings
+├── README.md                     # This file
+├── package.json                  # yarn workspaces root
+├── .yarnrc.yml                   # yarn berry config
+├── tsconfig.base.json            # Shared TypeScript config
+├── .changeset/                   # Version management (changesets)
+├── .github/workflows/ci.yml      # CI: test, typecheck, npm publish
 │
 ├── .claude/
 │   └── rules/
-│       ├── coding-style.md       # TypeScript / React コーディング規約
-│       ├── testing.md            # テスト戦略・タイマーの注意点
-│       └── plan-template.md      # Plan モードのテンプレート
+│       ├── coding-style.md       # TypeScript / React coding conventions
+│       ├── testing.md            # Test strategy and timer gotchas
+│       └── plan-template.md      # Plan mode template
 │
 └── packages/
     ├── react/                    # @behave-ui/react v0.4.0
-    │   ├── package.json
-    │   ├── tsconfig.json
-    │   ├── vite.config.ts
     │   └── src/
-    │       ├── index.ts          # 公開エントリポイント
+    │       ├── index.ts
     │       ├── hooks/
-    │       │   ├── useAsyncState.ts
-    │       │   └── useAsyncState.test.ts
+    │       │   └── useAsyncState.ts
     │       └── components/
     │           ├── AsyncButton/
-    │           ├── AutoForm/     # ✨ Zod v4 + Discriminated Union 対応
+    │           ├── AutoForm/     # ✨ Zod v4 + Discriminated Union
     │           └── DataFetch/
     └── cli/                      # @behave-ui/cli v1.0.2
-        ├── package.json
-        ├── tsconfig.json
         └── src/
             ├── index.ts
             ├── registry.ts
@@ -442,30 +408,36 @@ behave-ui/
 
 ---
 
-## 設計原則
+## Design Principles
 
-1. **振る舞いファースト** — コンポーネントは見た目ではなく状態機械を内包する
-2. **ゼロマジック** — `data-status` 属性で内部状態を常に可視化・デバッグ可能にする
-3. **型安全** — generics で型を伝播。`onSuccess` はデータの型を知っている
-4. **非破壊的導入** — グローバルプロバイダー不要。1コンポーネントから段階的に導入できる
-5. **1問題1解決** — デザインシステム化しない。汎用化の罠を避ける
+1. **Behavior-first** — components own their state machine, not just their style
+2. **Zero magic** — `data-status` attributes keep internal state always inspectable
+3. **Type-safe** — generics propagate through; `onSuccess` knows the type of your data
+4. **Non-destructive** — no global providers required; adopt one component at a time
+5. **One problem, done right** — no aspirations to be a full design system
 
 ---
 
-## ロードマップ
+## Roadmap
 
-| フェーズ | 状態 | 内容 |
+| Phase | Status | Description |
 |---------|------|------|
-| Phase 0 | ✅ 完了 | モノレポ環境構築 |
-| Phase 1 | ✅ 完了 | AsyncButton + useAsyncState |
-| Phase 2 | ✅ 完了 | AutoForm（Zod v4 対応） |
-| Phase 3 | ✅ 完了 | DataFetch（キャッシュ・リトライ） |
-| Phase 4 | ✅ 完了 | CLI 整備・npm publish・GitHub templates |
-| Phase 5 | ✅ 完了 | Discriminated Union 対応（v0.4.0） |
-| Phase 6 | 🔲 未着手 | パフォーマンス最適化・SSR 対応 |
+| Phase 0 | ✅ Done | Monorepo setup |
+| Phase 1 | ✅ Done | AsyncButton + useAsyncState |
+| Phase 2 | ✅ Done | AutoForm (Zod v4 support) |
+| Phase 3 | ✅ Done | DataFetch (cache + retry) |
+| Phase 4 | ✅ Done | CLI, npm publish, GitHub templates |
+| Phase 5 | ✅ Done | Discriminated Union (v0.4.0) |
+| Phase 6 | 🔲 Next | Performance optimization, SSR support |
 
 ---
 
-## ライセンス
+## Contributing
+
+Issues and PRs are welcome! Please check the existing issues before opening a new one.
+
+---
+
+## License
 
 MIT
